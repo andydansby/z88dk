@@ -65,6 +65,7 @@
 		SECTION	code_font
 		SECTION	code_font_fzx
 		SECTION	code_psg
+		SECTION	code_sound_ay
 		SECTION	code_z80
 IF !__crt_org_graphics
 		SECTION code_graphics
@@ -77,6 +78,7 @@ ENDIF
 		SECTION rodata_compiler
 		SECTION rodata_clib
 		SECTION rodata_psg
+		SECTION rodata_sound_ay
 IF !__crt_org_graphics
 		SECTION rodata_graphics
 ENDIF
@@ -93,6 +95,7 @@ IF !__crt_model
 		SECTION data_clib
 		SECTION data_stdlib
 		SECTION data_psg
+		SECTION data_sound_ay
 IF !__crt_org_graphics
 		SECTION data_graphics
 ENDIF
@@ -130,6 +133,7 @@ IF !__crt_org_graphics
 		SECTION bss_graphics
 ENDIF
 		SECTION bss_psg
+		SECTION bss_sound_ay
 		SECTION bss_user
 IF __crt_model > 0
         	SECTION DATA
@@ -142,6 +146,7 @@ IF __crt_model > 0
 		SECTION data_crt
 		SECTION data_stdlib
 		SECTION data_psg
+		SECTION data_sound_ay
 IF !__crt_org_graphics
 		SECTION data_graphics
 ENDIF
