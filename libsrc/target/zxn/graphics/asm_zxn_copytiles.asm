@@ -3,16 +3,16 @@
 
 	MODULE		asm_zxn_copytiles
 
-	PUBLIC		__asm_zxn_copytiles
+	PUBLIC		asm_zxn_copytiles
 
-; Copy a standard 8x8 font into tiles
+; Copy a standard 8x8 font/graphics into the tile description
 ;
 ; Entry: hl = font
 ;	  c = starting tile
 ;	  b = number of tiles
 ;
 ; We use palette index 0 and 1 to represent set bits
-__asm_zxn_copytiles:
+asm_zxn_copytiles:
 	ex	de,hl
 	ld	l,c
 	push	bc

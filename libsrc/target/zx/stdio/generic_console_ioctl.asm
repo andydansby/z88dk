@@ -12,11 +12,14 @@
 	EXTERN	__zx_screenmode
 	EXTERN	__console_w
 
-	EXTERN	__asm_zxn_copytiles
+	EXTERN	asm_zxn_copytiles
+	EXTERN	generic_console_caps
 
 
         PUBLIC          CLIB_GENCON_CAPS
         defc            CLIB_GENCON_CAPS = CAP_GENCON_INVERSE | CAP_GENCON_BOLD | CAP_GENCON_UNDERLINE | CAP_GENCON_CUSTOM_FONT | CAP_GENCON_UDGS | CAP_GENCON_FG_COLOUR | CAP_GENCON_BG_COLOUR
+	defc		CLIB_GENCON_CAPS_TIMEX_HIRES = CAP_GENCON_INVERSE | CAP_GENCON_BOLD | CAP_GENCON_UNDERLINE | CAP_GENCON_CUSTOM_FONT | CAP_GENCON_UDGS
+	defc		CLIB_GENCON_CAPS_TILEMAP =  CAP_GENCON_CUSTOM_FONT | CAP_GENCON_UDGS
 
 ; a = ioctl
 ; de = arg
@@ -41,7 +44,7 @@ IF FORzxn
 	ld	h,b
 	ld	c,e
 	ld	b,d
-	call	__asm_zxn_copytiles
+	call	asm_zxn_copytiles
 ENDIF
 success:
 	and	a
@@ -67,6 +70,7 @@ IF FORts2068 | FORzxn
 	; 2 = high colour
 	; 6 = hires
 	ld	l,64
+	ld	h,CLIB_GENCON_CAPS
 	cp	0
 	jr	z,set_mode
 	cp	1
@@ -76,25 +80,42 @@ IF FORts2068 | FORzxn
 	and	7
 	cp	6
 	ld	l,128
+	ld	h,CLIB_GENCON_CAPS_TIMEX_HIRES
 IF !FORzxn
 	jr	nz,failure
 ELSE
 	jr	z,set_mode
 ;zxn modes
-	ld	a,r
-	out	(254),a
 	ld	a,c
 	ld	(__zx_screenmode),a
-	nextreg	$6b,@10000001
+	; Mode 64 = 40 column
+	;      65 = 40 column with single byte tiles
+	;      66 = 80 column
+	;      67 = 80 column with single byte tiles
+	rrca
+	rrca
+	rrca
+	and	@01100000
+	or	@10000001
+	nextreg	$6b,a
 	nextreg	$6c,@10000000
 	nextreg	$6e,$6c ;tile map
-	nextreg	$6f,$5c	;tile definition
+	nextreg	$6f,$4c	;tile definition
 	ld	hl,$2028
+	bit	6,a
+	jr	z,set_tilemap_size
+	ld	l,80
+set_tilemap_size:
 	ld	(__console_w),hl
+	ld	a,CLIB_GENCON_CAPS_TILEMAP
+	ld	(generic_console_caps),a
+	call	generic_console_cls
 	jr	success
 ENDIF
 set_mode:
 	ld	(__zx_screenmode),a
+	ld	a,h
+	ld	(generic_console_caps),a
 	ld	h,$18
 	ld	(__console_w),hl
 	in	a,($ff)
@@ -105,7 +126,7 @@ set_mode:
 	or	b
 	out	($ff),a
 	call	generic_console_cls
-	jr	success
+	jp	success
 ENDIF
 failure:
 	scf
