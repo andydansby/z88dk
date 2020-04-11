@@ -195,6 +195,7 @@ zxn_clib.lib:
 	$(call buildgeneric,zxn)
 	$(MAKE) -C target/zx TARGET=zxn
 	$(MAKE) -C games TARGET=zxn
+	$(MAKE) -C target/zxn TARGET=zxn
 	TARGET=zxn TYPE=z80n $(LIBLINKER) -mz80n -DFORzx -DFORzxn -DSTANDARDESCAPECHARS $(COLDEFS) -x$(OUTPUT_DIRECTORY)/zxn_clib @$(LISTFILE_DIRECTORY)/zxn.lst
 
 # 64/32 column library for TS2068 - dom/stefano/alvin
